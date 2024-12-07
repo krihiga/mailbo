@@ -32,7 +32,7 @@ document.getElementById('emailForm').addEventListener('submit', function(e) {
     }
 
     // Send the form data to your backend
-    fetch('https://customsendmail.vercel.app/api/sendmail', { // Replace with your deployed Vercel URL
+    fetch('https://mailbo.vercel.app/api/sendmail', { // Replace with your deployed Vercel URL
         method: 'POST',
         body: formData,
     })
