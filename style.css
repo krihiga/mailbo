@@ -19,12 +19,12 @@ body {
 
 /* Email Form Container */
 .email-form {
+    margin-top: 30%;
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     padding: 20px;
     width: 400px;
-    margin-top: 50%;
 }
 
 /* Heading */
