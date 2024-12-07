@@ -7,12 +7,12 @@ const upload = multer({ storage: storage }).array('attachments');
 
 // Create a transporter using Gmail's SMTP server
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',  // Gmail's SMTP server
-    port: 587,               // TLS port
-    secure: false,           // Use TLS
+    host: 'smtp.gmail.com', // Gmail's SMTP server
+    port: 587,              // TLS port
+    secure: false,          // Use TLS
     auth: {
         user: process.env.GMAIL_USER,  // Your Gmail address
-        pass: process.env.GMAIL_PASS,  // Your Gmail App password or regular password
+        pass: process.env.GMAIL_PASS, // Your Gmail App password
     },
 });
 
@@ -26,24 +26,20 @@ module.exports = async (req, res) => {
                 return res.status(400).json({ error: 'Error uploading file' });
             }
 
-            // Log the incoming form data to check
-            console.log('Form Data:', req.body);
-            console.log('Files:', req.files);
-
             const { email, subject, name, emailr, phone, businessName, style, colors, message } = req.body;
 
             const mailOptions = {
-                from: process.env.GMAIL_USER,  // Sender's email address
-                to: email,                    // Recipient's email address
+                from: `"${name}" <${process.env.GMAIL_USER}>`, // Sender's email address
+                to: email,                                   // Recipient's email address
                 subject: subject,
-                name: name,
-                emailr: emailr,
-                phone: phone,
-                businessName: businessName,
-                style: style,
-                colors: colors,             
-                text: message,                
-                attachments: [],              // To store attachments
+                text: `Name: ${name}
+                Emailr: ${emailr}
+                Phone: ${phone}
+                Business Name: ${businessName}
+                Preferred Style: ${style}
+                Preferred Colors: ${colors}
+                Message: ${message}`,
+                attachments: [], // Initialize attachments array
             };
 
             // Add files to the attachments array
@@ -52,19 +48,17 @@ module.exports = async (req, res) => {
                     mailOptions.attachments.push({
                         filename: file.originalname,
                         content: file.buffer,
-                        encoding: 'base64',
                     });
                 });
             }
 
             try {
-                const info = await transporter.sendmail(mailOptions);
-                console.log('Email sent: ' + info.response);
+                const info = await transporter.sendMail(mailOptions);
+                console.log('Email sent:', info.response);
                 res.status(200).json({ success: true, message: 'Email sent successfully!' });
             } catch (error) {
                 console.error('Error sending email:', error);
-                res.status(400).json({ success: false, error: 'Error sending email' });
-
+                res.status(500).json({ success: false, error: 'Error sending email' });
             }
         });
     } else {
