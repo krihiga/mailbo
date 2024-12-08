@@ -1,6 +1,6 @@
 // Import Firebase modules
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,16 +21,19 @@ const firebaseConfig = {
 // Google Sign-in
 const provider = new GoogleAuthProvider();
 
-document.getElementById("google-signin").addEventListener("click", () => {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        console.log("User signed in:", result.user);
-    // After sign-in, redirect to a new page
-    window.location.href = "form.html";  
+// Google Sign-In Button
+const googleSignInButton = document.getElementById("google-signin");
+
+googleSignInButton.addEventListener("click", () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      const user = result.user;
+      console.log("User signed in:", user);
+
+      // Redirect after successful sign-in
+      window.location.href = "form.html";
     })
-      .catch((error) => {
-        console.error("Error during sign-in:", error.code, error.message);
-      });
-  });
-      
-    
+    .catch((error) => {
+      console.error("Sign-in error:", error.code, error.message);
+    });
+});
