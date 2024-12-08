@@ -1,6 +1,9 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+import { signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+signInWithRedirect(auth, provider);
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -35,7 +38,6 @@ googleSignInButton.addEventListener('click', async () => {
       <button id="signOut">Sign Out</button>
     `;
     window.location.href = "form.html";
-
     // Sign out logic
     document.getElementById('signOut').addEventListener('click', async () => {
       await signOut(auth);
@@ -43,7 +45,14 @@ googleSignInButton.addEventListener('click', async () => {
       alert('You have signed out.');
     });
   } catch (error) {
+    // Display meaningful error messages
     console.error('Error during sign-in:', error);
-    alert('Failed to sign in. Please try again.');
+    if (error.code === 'auth/popup-blocked') {
+      alert('Popup blocked! Please allow popups and try again.');
+    } else if (error.code === 'auth/network-request-failed') {
+      alert('Network error. Check your internet connection and try again.');
+    } else {
+      alert('An error occurred. Please try again.');
+    }
   }
 });
