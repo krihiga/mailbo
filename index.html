@@ -34,12 +34,55 @@
   </style>
 </head>
 <body>
-  <button id="googleSignIn">Sign in with Google</button>
+  <button id="googleSignInBtn">Sign in with Google</button>
   <div id="user-info"></div>
 
-  <!-- Firebase App (SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js"></script>
-  <script src="main.js"></script>
+  <script type="module">
+    // Import Firebase functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDVIaFaHV5e4fxL6HQeO22_TtaGEtK60CE",
+      authDomain: "https://mailbo.vercel.app",
+      projectId: "busy-order-111094",
+      storageBucket: "busy-order-111094.appspot.com",
+      messagingSenderId: "402345046681",
+      appId: "1:402345046681:web:4def93c2d5c4742b3c7e08",
+      measurementId: "G-3R9FT0HKNM",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Initialize the Google provider
+    const provider = new GoogleAuthProvider();
+
+    // Trigger the sign-in process on button click
+    document.getElementById("googleSignInBtn").addEventListener("click", () => {
+      signInWithRedirect(auth, provider);
+    });
+
+    // Handle the redirect result (after sign-in)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          const user = result.user;
+          console.log("User signed in:", user);
+          document.getElementById("user-info").innerHTML = `
+            <p>Welcome, ${user.displayName}!</p>
+            <p>Email: ${user.email}</p>
+          `;
+          // Redirect to another page after successful sign-in
+          window.location.href = 'form.html';
+        }
+      })
+      .catch((error) => {
+        console.error("Error during sign-in:", error);
+        document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
+      });
+  </script>
 </body>
 </html>
