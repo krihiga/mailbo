@@ -40,7 +40,7 @@
   <script type="module">
     // Import Firebase functions
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
 
     // Firebase configuration
     const firebaseConfig = {
@@ -61,13 +61,8 @@
 
     // Trigger the sign-in process on button click
     document.getElementById("googleSignInBtn").addEventListener("click", () => {
-      signInWithRedirect(auth, provider);
-    });
-
-    // Handle the redirect result (after sign-in)
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result && result.user) {
+      signInWithPopup(auth, provider)
+        .then((result) => {
           const user = result.user;
           console.log("User signed in:", user);
           document.getElementById("user-info").innerHTML = `
@@ -75,13 +70,13 @@
             <p>Email: ${user.email}</p>
           `;
           // Redirect to another page after successful sign-in
-          window.location.href = 'https://mailbo.vercel.app/form.html';
-        }
-      })
-      .catch((error) => {
-        console.error("Error during sign-in:", error);
-        document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
-      });
+          window.location.href = 'form.html';
+        })
+        .catch((error) => {
+          console.error("Error during sign-in:", error);
+          document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
+        });
+    });
   </script>
 </body>
 </html>
