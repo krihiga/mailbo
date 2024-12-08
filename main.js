@@ -25,15 +25,16 @@ const provider = new GoogleAuthProvider();
 const googleSignInButton = document.getElementById("google-signin");
 
 googleSignInButton.addEventListener("click", () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      const user = result.user;
-      console.log("User signed in:", user);
-
-      // Redirect after successful sign-in
+    console.log("Google Sign-In button clicked.");
+  
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log("Sign-in successful:", result.user);
+          // Redirect after successful sign-in
       window.location.href = "form.html";
-    })
-    .catch((error) => {
-      console.error("Sign-in error:", error.code, error.message);
-    });
-});
+      })
+      .catch((error) => {
+        console.error("Error during sign-in:", error.code, error.message);
+      });
+  });
+  
