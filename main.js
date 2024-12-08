@@ -1,6 +1,6 @@
 // Import Firebase functions
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 import { signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
 signInWithRedirect(auth, provider);
 
@@ -20,39 +20,25 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
+
+// Initialize the Google provider
 const provider = new GoogleAuthProvider();
 
-// DOM elements
-const googleSignInButton = document.getElementById('googleSignIn');
-const userInfoDiv = document.getElementById('user-info');
-
-// Google Sign-In
-googleSignInButton.addEventListener('click', async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    userInfoDiv.innerHTML = `
-      <h3>Welcome, ${user.displayName}!</h3>
-      <img src="${user.photoURL}" alt="User Image" width="100" height="100">
-      <p>Email: ${user.email}</p>
-      <button id="signOut">Sign Out</button>
-    `;
-    window.location.href = "form.html";
-    // Sign out logic
-    document.getElementById('signOut').addEventListener('click', async () => {
-      await signOut(auth);
-      userInfoDiv.innerHTML = '';
-      alert('You have signed out.');
-    });
-  } catch (error) {
-    // Display meaningful error messages
-    console.error('Error during sign-in:', error);
-    if (error.code === 'auth/popup-blocked') {
-      alert('Popup blocked! Please allow popups and try again.');
-    } else if (error.code === 'auth/network-request-failed') {
-      alert('Network error. Check your internet connection and try again.');
-    } else {
-      alert('An error occurred. Please try again.');
-    }
-  }
+// Trigger the sign-in process on button click
+document.getElementById("googleSignInBtn").addEventListener("click", () => {
+    const auth = getAuth();
+    signInWithRedirect(auth, provider);
 });
+
+// Handle the redirect result (after sign-in)
+getRedirectResult(auth)
+    .then((result) => {
+        if (result) {
+            const user = result.user;
+            console.log("User signed in:", user);
+        }
+    })
+    .catch((error) => {
+        console.error("Error during sign-in:", error);
+    });
