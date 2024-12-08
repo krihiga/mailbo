@@ -22,16 +22,16 @@ const firebaseConfig = {
 const googleSignInButton = document.getElementById("google-signin");
 const provider = new GoogleAuthProvider();
 
-googleSignInButton.addEventListener("click", () => {
-  signInWithPopup(auth, provider)
-    .then((result) => {
-      const user = result.user;
-      console.log("User signed in:", user);
-
-      // After sign-in, redirect to a new page
-      window.location.href = "form.html";
+document.getElementById("google-signin").addEventListener("click", () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log("User signed in:", result.user);
+    // After sign-in, redirect to a new page
+    window.location.href = "form.html";  
     })
-    .catch((error) => {
-      console.error("Error during sign-in:", error);
-    });
-});
+      .catch((error) => {
+        console.error("Error during sign-in:", error.code, error.message);
+      });
+  });
+      
+    
