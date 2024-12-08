@@ -8,8 +8,7 @@ signInWithRedirect(auth, provider);
 // Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDVIaFaHV5e4fxL6HQeO22_TtaGEtK60CE",
-  authDomain: "busy-order-111094.firebaseapp.com",
-  databaseURL: "https://busy-order-111094-default-rtdb.firebaseio.com",
+  authDomain: "https://mailbo.vercel.app",
   projectId: "busy-order-111094",
   storageBucket: "busy-order-111094.firebasestorage.app",
   messagingSenderId: "402345046681",
