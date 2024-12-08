@@ -68,22 +68,22 @@
 
     // Handle the redirect result (after sign-in)
     getRedirectResult(auth)
-      .then((result) => {
-        if (result && result.user) {
-          const user = result.user;
-          console.log("User signed in:", user);
-          document.getElementById("user-info").innerHTML = `
-            <p>Welcome, ${user.displayName}!</p>
-            <p>Email: ${user.email}</p>
-          `;
-          // Redirect to another page after successful sign-in
-          window.location.href = 'form.html';
-        }
-      })
-      .catch((error) => {
-        console.error("Error during sign-in:", error);
-        document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
-      });
-  </script>
-</body>
-</html>
+  .then((result) => {
+    if (result && result.user) {
+      const user = result.user;
+      console.log("User signed in:", user);
+      document.getElementById("user-info").innerHTML = `
+        <p>Welcome, ${user.displayName}!</p>
+        <p>Email: ${user.email}</p>
+      `;
+      // Debug message
+      console.log("Redirecting to form.html...");
+      window.location.href = 'form.html';
+    } else {
+      console.log("No user signed in.");
+    }
+  })
+  .catch((error) => {
+    console.error("Error during sign-in:", error);
+    document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
+  });
