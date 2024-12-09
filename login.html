@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Busy Order</title>
+	<title>MailBO</title>
     <link rel="stylesheet" href="style.css">
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -52,40 +52,45 @@ const firebaseConfig = {
         let Password = document.getElementById('password');
         let signinForm = document.getElementById('signin');
 
-        let SigninUser = (evt) => {
-            evt.preventDefault();
-            if (Email.value && Password.value) {
-                signInWithEmailAndPassword(auth, Email.value, Password.value)
-                    .then((userCredential) => {
-                        const user = userCredential.user;
-                        const dbRef = ref(db);
+        let SigninUser = async (evt) => {
+    evt.preventDefault();
 
-                        // Check if user data exists in the database
-                        get(child(dbRef, 'users/' + user.uid))
-                            .then((snapshot) => {
-                                if (snapshot.exists()) {
-                            const userData = snapshot.val();
-                            const username = userData.username; 
-                            sessionStorage.setItem("username", username);
-                            sessionStorage.setItem("user-creds", JSON.stringify(userCredential.user));
-                            window.location.href = 'home.html';
-                                } else {
-                                    alert('User data not found in the database.');
-                                }
-                            })
-                            .catch((error) => {
-                                console.error('Error fetching data from database:', error);
-                            });
-                    })
-                    .catch((error) => {
-                        alert('Error: ' + error.message);
-                        console.error('Error code:', error.code);
-                    });
+    const email = Email.value.trim();
+    const password = Password.value.trim();
+
+    if (email && password) {
+        try {
+            // Firebase Authentication
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            console.log("User signed in:", user);
+
+            // Fetch User Data from Database
+            const dbRef = ref(db);
+            const snapshot = await get(child(dbRef, `users/${user.uid}`));
+
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                const username = userData.username;
+
+                // Save data to sessionStorage
+                sessionStorage.setItem("username", username);
+                sessionStorage.setItem("user-creds", JSON.stringify(user));
+
+                console.log("Redirecting to home.html...");
+                window.location.href = "home.html"; // Redirect to home page
             } else {
-                alert('Please fill in both fields.');
+                alert("User data not found in the database.");
+                console.error("No user data found for:", user.uid);
             }
-        };
-
+        } catch (error) {
+            console.error("Error during sign-in:", error);
+            alert("Error: " + error.message);
+        }
+    } else {
+        alert("Please fill in both fields.");
+    }
+};
         signinForm.addEventListener('submit', SigninUser);
     </script>
 </body>
