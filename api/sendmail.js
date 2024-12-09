@@ -12,8 +12,8 @@ const transporter = nodemailer.createTransport({
     port: 587,               // TLS port
     secure: false,           // Use TLS
     auth: {
-        user: functions.config().gmail.user,  // Sender's email address from Firebase config
-        pass: functions.config().gmail.pass,  // Sender's email app password from Firebase config
+        user: functions.users().gmail.user,  // Sender's email address from Firebase config
+        pass: functions.users().gmail.pass,  // Sender's email app password from Firebase config
     },
 });
 
@@ -41,7 +41,7 @@ module.exports = (req, res) => {
 
             // Create email options
             const mailOptions = {
-                from: functions.config().gmail.user,  // Sender's email address from Firebase config
+                from: functions.users().gmail.user,  // Sender's email address from Firebase config
                 to: process.env.GMAIL_USER,           // Recipient's email address (configured in environment)
                 subject: subject,
                 text: `
