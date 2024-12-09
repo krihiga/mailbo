@@ -38,23 +38,25 @@ document.getElementById('emailForm').addEventListener('submit', function (e) {
     }
 
     // Send the form data to the backend API
-    fetch('https://mailbo.vercel.app/api/sendMail', { // Replace with your actual API endpoint
+    fetch('https://mailbo.vercel.app/api/sendMail', {
         method: 'POST',
         body: formData,
     })
-        .then(response => {
-            console.log('Response Status:', response.status);
-            if (!response.ok) {
-                throw new Error('Failed to send email');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Response Data:', data);
-            alert(data.message || 'Email sent successfully!');
-        })
-        .catch(error => {
-            console.error('Error sending email:', error);
-            alert('Error sending email: ' + error.message);
-        });
-});
+    .then(response => {
+        console.log('Response Status:', response.status);
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Failed to send email');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response Data:', data);
+        alert(data.message || 'Email sent successfully!');
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+        alert('Error sending email: ' + error.message);
+    });
+})    

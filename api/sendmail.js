@@ -25,6 +25,10 @@ module.exports = async (req, res) => {
                 console.error('Error uploading file:', err);
                 return res.status(400).json({ error: 'Error uploading file' });
             }
+            console.log('Uploaded Files:', req.files);
+            console.log('Request Body:', req.body);
+       
+        
 
             const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
@@ -58,10 +62,10 @@ module.exports = async (req, res) => {
                 res.status(200).json({ success: true, message: 'Email sent successfully!' });
             } catch (error) {
                 console.error('Error sending email:', error);
-                res.status(500).json({ success: false, error: 'Error sending email' });
+                res.status(500).json({ success: false, error: error.message || 'Error sending email' });
             }
-        });
+        });    
     } else {
         res.status(405).json({ error: 'Method Not Allowed' });
     }
-};
+}
