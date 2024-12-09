@@ -38,7 +38,7 @@ module.exports = (req, res) => {
                     }
 
                     const mailOptions = {
-                        from: userEmail, // Gmail account used for sending email
+                        from: email, // Gmail account used for sending email
                         to: process.env.GMAIL_USER, // Recipient's email address (Firebase user's email or other)
                         subject: subject,
                         text: `
