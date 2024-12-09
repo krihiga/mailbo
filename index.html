@@ -1,82 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign in with Google</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: #f7f7f7;
-    }
-    button {
-      background-color: #4285F4;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #357ae8;
-    }
-    #user-info {
-      margin-top: 20px;
-      text-align: center;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email Form</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <button id="googleSignInBtn">Sign in with Google</button>
-  <div id="user-info"></div>
+    
+    <form id="emailForm" enctype="multipart/form-data">
+        <label for="email"> Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
 
-  <script type="module">
-    // Import Firebase functions
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js";
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required><br><br>
 
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
-      authDomain: "mailbo.vercel.app/__/auth/handler",
-      projectId: "mailbo-73ddc",
-      storageBucket: "mailbo-73ddc.firebasestorage.app",
-      messagingSenderId: "246151382296",
-      appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
-    };
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone"><br><br>
 
-    // Initialize the Google provider
-    const provider = new GoogleAuthProvider();
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" name="businessName"><br><br>
 
-    // Trigger the sign-in process on button click
-    document.getElementById("googleSignInBtn").addEventListener("click", () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          console.log("User signed in:", user);
-          document.getElementById("user-info").innerHTML = `
-            <p>Welcome, ${user.displayName}!</p>
-            <p>Email: ${user.email}</p>
-          `;
-          // Redirect to another page after successful sign-in
-          window.location.href = 'form.html';
-        })
-        .catch((error) => {
-          console.error("Error during sign-in:", error);
-          document.getElementById("user-info").innerHTML = `<p>Error: ${error.message}</p>`;
-        });
-    });
-  </script>
+        <label for="style">Preferred Style:</label>
+        <select id="style" name="style" required>
+            <option value="">Select Style</option>
+            <option value="minimalist">Minimalist</option>
+            <option value="modern">Modern</option>
+            <option value="vintage">Vintage</option>
+            <option value="typography">Typography</option>
+        </select><br><br>
+
+        <label for="colors">Preferred Colors:</label>
+        <input type="text" id="colors" name="colors"><br><br>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br><br>
+
+        <label for="file">Attachments:</label>
+        <input type="file" id="file" name="file" multiple><br><br>
+
+        <button type="submit">Send Email</button>
+    </form>
+
+    <script src="script.js"></script>
 </body>
 </html>

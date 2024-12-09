@@ -29,12 +29,11 @@ module.exports = async (req, res) => {
             const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
             const mailOptions = {
-                from: `"${name}" <${process.env.GMAIL_USER}>` , // Sender's email address
-                to:'onlyrithi@gmail.com',                                   // Recipient's email address
+                from: email , // Sender's email address
+                to:`"${name}" <${process.env.GMAIL_USER}>`,                                   // Recipient's email address
                 subject: subject,
                 text: `
                 Name: ${name}
-                Emailr: ${email}
                 Phone: ${phone}
                 Business Name: ${businessName}
                 Preferred Style: ${style}
