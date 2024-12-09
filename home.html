@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+    <h2>Send Mail</h2>
+    <form id="emailForm" enctype="multipart/form-data">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required placeholder="Enter recipient's email">
+
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" required placeholder="Enter email subject">
+
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name">
+
+        <label for="phone">Phone Number:</label>
+        <input type="text" id="phone" name="phone" placeholder="Enter your phone number">
+
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" name="businessName" placeholder="Enter your business name">
+
+        <label for="style">Preferred Style:</label>
+        <select id="style" name="style" required>
+            <option value="">Select Style</option>
+            <option value="minimalist">Minimalist</option>
+            <option value="modern">Modern</option>
+            <option value="vintage">Vintage</option>
+            <option value="typography">Typography</option>
+        </select>
+
+        <label for="colors">Preferred Colors:</label>
+        <input type="text" id="colors" name="colors" placeholder="E.g., blue, white, black">
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" placeholder="Enter your message"></textarea>
+
+        <label for="file">Attachments:</label>
+        <input type="file" id="file" name="file" multiple accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+
+        <button type="submit">Send Email</button>
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>
