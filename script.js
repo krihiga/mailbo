@@ -36,7 +36,7 @@ document.getElementById('emailForm').addEventListener('submit', function (e) {
     }
 
     // Send the form data to the backend API
-    fetch('https://mailbo.vercel.app/home.html/api/sendMail', { // Replace with your deployed Vercel URL
+    fetch('https://mailbo.vercel.app/api/sendMail', { // Replace with your deployed Vercel URL
         method: 'POST',
         body: formData,
     })

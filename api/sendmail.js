@@ -1,9 +1,5 @@
 const nodemailer = require('nodemailer');
 const multer = require('multer');
-const admin = require('firebase-admin');
-
-// Initialize Firebase Admin SDK
-admin.initializeApp();
 
 // Set up storage for multer (in-memory storage for file upload)
 const storage = multer.memoryStorage();
@@ -11,28 +7,17 @@ const upload = multer({ storage: storage }).array('attachments');
 
 // Create a transporter using Gmail's SMTP server
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Use TLS
+    host: 'smtp.gmail.com',  // Gmail's SMTP server
+    port: 587,               // TLS port
+    secure: false,           // Use TLS
     auth: {
         user: process.env.GMAIL_USER,  // Your Gmail address
-        pass: process.env.GMAIL_PASS,  // Your Gmail App password
+        pass: process.env.GMAIL_PASS,  // Your Gmail App password or regular password
     },
 });
-
 // API route for sending the email
 module.exports = (req, res) => {
     if (req.method === 'POST') {
-        // Verify Firebase User's ID Token for Authentication
-        const idToken = req.headers.authorization?.split('Bearer ')[1];
-        
-        if (!idToken) {
-            return res.status(403).json({ error: 'No ID token provided' });
-        }
-
-        admin.auth().verifyIdToken(idToken)
-            .then((decodedToken) => {
-                const userEmail = decodedToken.email; // Firebase user's email
 
                 // Parse the incoming form data with file attachments
                 upload(req, res, async (err) => {
@@ -40,9 +25,10 @@ module.exports = (req, res) => {
                         console.error('Error uploading file:', err);
                         return res.status(400).json({ error: 'Error uploading file' });
                     }
-
-                    console.log('Uploaded Files:', req.files);
-                    console.log('Request Body:', req.body);
+        
+                    // Log the incoming form data to check
+                    console.log('Form Data:', req.body);
+                    console.log('Files:', req.files);
 
                     const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
@@ -76,7 +62,7 @@ module.exports = (req, res) => {
                             });
                         });
                     }
-
+        
                     try {
                         const info = await transporter.sendMail(mailOptions);
                         console.log('Email sent: ' + info.response);
@@ -86,12 +72,8 @@ module.exports = (req, res) => {
                         res.status(500).json({ error: 'Error sending email' });
                     }
                 });
-            })
-            .catch((error) => {
-                console.error('Error verifying Firebase ID token:', error);
-                return res.status(403).json({ error: 'Unauthorized' });
-            });
-    } else {
-        res.status(405).json({ error: 'Method Not Allowed' });
-    }
-};
+            } else {
+                res.status(405).json({ error: 'Method Not Allowed' });
+            }
+        };
+        
