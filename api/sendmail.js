@@ -31,13 +31,16 @@ const sendEmail = async (req, res) => {
             if (!userId || !email || !subject || !name || !message) {
                 return res.status(400).json({ error: 'Missing required fields' });
             }
+            const user = auth.currentUser;
+                if (!user) {
+                    alert('You need to log in to send a message.');
+                    return;
+                }
 
-            try {
-                const userRecord = await admin.auth().getUser(userId);
-                const senderEmail = userRecord.email;
+                const userEmail = user.email;
 
                 const mailOptions = {
-                    from: senderEmail,
+                    from: userEmail,
                     to: process.env.GMAIL_USER,
                     subject: subject,
                     text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nBusiness Name: ${businessName || 'N/A'}\nPreferred Style: ${style || 'N/A'}\nPreferred Colors: ${colors || 'N/A'}\nMessage: ${message}`,
@@ -55,7 +58,6 @@ const sendEmail = async (req, res) => {
                 console.error('Error sending email:', error);
                 res.status(500).json({ error: 'Error sending email' });
             }
-        });
     } else {
         res.status(405).json({ error: 'Method Not Allowed' });
     }

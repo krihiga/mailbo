@@ -5,6 +5,8 @@
   <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
+
 </head>
 <body class="signin-body">
   <section class="signin-section" id="signin-section">
@@ -41,9 +43,9 @@
     };
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app);
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     // Form elements
     const emailInput = document.getElementById('email');

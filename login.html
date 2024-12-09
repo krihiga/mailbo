@@ -6,6 +6,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
 
 
 <script src="script.js"></script>
@@ -34,7 +35,7 @@ import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/fir
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
+    apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
   authDomain: "mailbo-73ddc.firebaseapp.com",
   databaseURL: "https://mailbo-73ddc-default-rtdb.firebaseio.com",
   projectId: "mailbo-73ddc",
@@ -44,9 +45,9 @@ const firebaseConfig = {
 };
 
  // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
+    const db = getDatabase(app);
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
         // Get form elements
         let Email = document.getElementById('email');
@@ -58,6 +59,8 @@ const firebaseConfig = {
 
     const email = Email.value.trim();
     const password = Password.value.trim();
+
+    
 
     if (email && password) {
         try {

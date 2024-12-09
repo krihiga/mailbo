@@ -29,6 +29,7 @@ document.getElementById('emailForm').addEventListener('submit', function (e) {
     formData.append('style', style);
     formData.append('colors', colors);
     formData.append('message', message);
+    formData.append('userEmail', userEmail); 
 
     // Append each selected file
     for (let i = 0; i < files.length; i++) {
