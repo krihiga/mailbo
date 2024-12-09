@@ -29,8 +29,8 @@ module.exports = async (req, res) => {
             const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
             const mailOptions = {
-                from: email , // Sender's email address
-                to:`"${name}" <${process.env.GMAIL_USER}>`,                                   // Recipient's email address
+                from:` "${name}" ${email}` , // Sender's email address
+                to:`<${process.env.GMAIL_USER}>`,                                   // Recipient's email address
                 subject: subject,
                 text: `
                 Name: ${name}
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
             }
 
             try {
-                const info = await transporter.sendMail(mailOptions);
+                const info = await transporter.sendmail(mailOptions);
                 console.log('Email sent:', info.response);
                 res.status(200).json({ success: true, message: 'Email sent successfully!' });
             } catch (error) {
