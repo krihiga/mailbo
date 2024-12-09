@@ -1,73 +1,53 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
 const nodemailer = require('nodemailer');
-const functions = require("firebase-functions");
 const multer = require('multer');
 
-// Set up storage for multer (in-memory storage for file upload)
+admin.initializeApp();
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }).array('attachments');
 
-// Create a transporter using Gmail's SMTP server
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',  // Gmail's SMTP server
-    port: 587,               // TLS port
-    secure: false,           // Use TLS
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
-        user: functions.users().gmail.user,  // Sender's email address from Firebase config
-        pass: functions.users().gmail.pass,  // Sender's email app password from Firebase config
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
     },
 });
 
-// API route for sending the email
-module.exports = (req, res) => {
+const sendEmail = async (req, res) => {
     if (req.method === 'POST') {
-
-        // Parse the incoming form data with file attachments
         upload(req, res, async (err) => {
             if (err) {
                 console.error('Error uploading file:', err);
                 return res.status(400).json({ error: 'Error uploading file' });
             }
 
-            // Log the incoming form data to check
-            console.log('Form Data:', req.body);
-            console.log('Files:', req.files);
+            const { userId, email, subject, name, phone, businessName, style, colors, message } = req.body;
 
-            const { email, subject, name, phone, businessName, style, colors, message } = req.body;
-
-            // Validate required fields
-            if (!email || !subject || !name || !message) {
+            if (!userId || !email || !subject || !name || !message) {
                 return res.status(400).json({ error: 'Missing required fields' });
             }
 
-            // Create email options
-            const mailOptions = {
-                from: functions.users().gmail.user,  // Sender's email address from Firebase config
-                to: process.env.GMAIL_USER,           // Recipient's email address (configured in environment)
-                subject: subject,
-                text: `
-                    Name: ${name}
-                    Email: ${email}
-                    Phone: ${phone || 'N/A'}
-                    Business Name: ${businessName || 'N/A'}
-                    Preferred Style: ${style || 'N/A'}
-                    Preferred Colors: ${colors || 'N/A'}
-                    Message: ${message}`,
-                attachments: [], // Initialize attachments array
-            };
+            try {
+                const userRecord = await admin.auth().getUser(userId);
+                const senderEmail = userRecord.email;
 
-            // Add files to the attachments array if any
-            if (req.files) {
-                req.files.forEach(file => {
-                    mailOptions.attachments.push({
+                const mailOptions = {
+                    from: senderEmail,
+                    to: process.env.GMAIL_USER,
+                    subject: subject,
+                    text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nBusiness Name: ${businessName || 'N/A'}\nPreferred Style: ${style || 'N/A'}\nPreferred Colors: ${colors || 'N/A'}\nMessage: ${message}`,
+                    attachments: req.files.map(file => ({
                         filename: file.originalname,
                         content: file.buffer,
                         encoding: 'base64',
-                    });
-                });
-            }
+                    })),
+                };
 
-            // Send the email using Nodemailer
-            try {
                 const info = await transporter.sendMail(mailOptions);
                 console.log('Email sent: ' + info.response);
                 res.status(200).json({ message: 'Email sent successfully!' });
@@ -77,7 +57,8 @@ module.exports = (req, res) => {
             }
         });
     } else {
-        // Handle unsupported HTTP methods
         res.status(405).json({ error: 'Method Not Allowed' });
     }
 };
+
+exports.sendEmail = functions.https.onRequest(sendEmail);
