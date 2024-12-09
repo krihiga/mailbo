@@ -37,8 +37,8 @@ module.exports = (req, res) => {
             }
 
             const mailOptions = {
-                from: email,
-                to: process.env.GMAIL_USER, // Recipient's email address
+                from: process.env.GMAIL_USER,
+                to: email , // Recipient's email address
                 subject: subject,
                 text: `
                 Name: ${name}
