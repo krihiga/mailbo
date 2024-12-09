@@ -1,42 +1,72 @@
 document.getElementById('emailForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    console.log('Form submission triggered');
+    e.preventDefault(); // Prevent form from refreshing the page
 
+    // Gather form inputs
     const email = document.getElementById('email').value;
     const subject = document.getElementById('subject').value;
+    const name = document.getElementById('name').value;
+    const emailr = document.getElementById('emailr').value;
+    const phone = document.getElementById('phone').value;
+    const businessName = document.getElementById('businessName').value;
+    const style = document.getElementById('style').value;
+    const colors = document.getElementById('colors').value;
+    const message = document.getElementById('message').value;
+    const fileInput = document.getElementById('file');
+    const files = fileInput.files;
 
-    // Basic field validation
-    if (!email || !subject) {
-        alert('Email and Subject are required fields.');
+    // Validate required fields
+    if (!email || !subject || !name || !message) {
+        alert('Please fill in all required fields: Email, Subject, Name, and Message.');
         return;
     }
 
+    // Create FormData object
     const formData = new FormData();
     formData.append('email', email);
     formData.append('subject', subject);
+    formData.append('name', name);
+    formData.append('emailr', emailr);
+    formData.append('phone', phone);
+    formData.append('businessName', businessName);
+    formData.append('style', style);
+    formData.append('colors', colors);
+    formData.append('message', message);
 
-    console.log('Sending FormData:', formData);
+    // Append each selected file
+    for (let i = 0; i < files.length; i++) {
+        formData.append('attachments', files[i]);
+    }
 
+    // Debugging: Check formData content
+    console.log('FormData Entries:');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ':', pair[1]);
+    }
+
+    // Send the form data to the backend API
     fetch('https://mailbo.vercel.app/api/sendMail', {
         method: 'POST',
         body: formData,
     })
         .then(response => {
-            console.log('API Response Status:', response.status);
+            console.log('Response Status:', response.status);
+
+            // Check if response is successful
             if (!response.ok) {
                 return response.json().then(data => {
-                    console.error('Backend Error:', data);
+                    console.error('Backend Error Response:', data);
                     throw new Error(data.error || 'Failed to send email');
                 });
             }
+
             return response.json();
         })
         .then(data => {
-            console.log('API Response Data:', data);
+            console.log('Response Data:', data);
             alert(data.message || 'Email sent successfully!');
         })
         .catch(error => {
-            console.error('Fetch Error:', error);
-            alert('Error: ' + error.message);
+            console.error('Error sending email:', error);
+            alert('Error sending email: ' + error.message);
         });
 });
