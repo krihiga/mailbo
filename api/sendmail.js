@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // API route for sending the email
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
     if (req.method === 'POST') {
         // Parse the incoming form data with file attachments
         upload(req, res, async (err) => {
@@ -25,29 +25,33 @@ module.exports = async (req, res) => {
                 console.error('Error uploading file:', err);
                 return res.status(400).json({ error: 'Error uploading file' });
             }
+
             console.log('Uploaded Files:', req.files);
             console.log('Request Body:', req.body);
-       
-        
 
             const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
+            // Validate required fields
+            if (!email || !subject || !name || !message) {
+                return res.status(400).json({ error: 'Missing required fields' });
+            }
+
             const mailOptions = {
                 from: `"${name}" <${email}>`,
-                to: process.env.GMAIL_USER,                               // Recipient's email address
+                to: process.env.GMAIL_USER, // Recipient's email address
                 subject: subject,
                 text: `
                 Name: ${name}
-                Phone: ${phone}
-                Business Name: ${businessName}
-                Preferred Style: ${style}
-                Preferred Colors: ${colors}
+                Phone: ${phone || 'N/A'}
+                Business Name: ${businessName || 'N/A'}
+                Preferred Style: ${style || 'N/A'}
+                Preferred Colors: ${colors || 'N/A'}
                 Message: ${message}`,
                 attachments: [], // Initialize attachments array
             };
 
             // Add files to the attachments array
-            if (req.files) {
+            if (req.files && req.files.length > 0) {
                 req.files.forEach(file => {
                     mailOptions.attachments.push({
                         filename: file.originalname,
@@ -64,8 +68,8 @@ module.exports = async (req, res) => {
                 console.error('Error sending email:', error);
                 res.status(500).json({ success: false, error: error.message || 'Error sending email' });
             }
-        });    
+        });
     } else {
         res.status(405).json({ error: 'Method Not Allowed' });
     }
-}
+};

@@ -14,6 +14,12 @@ document.getElementById('emailForm').addEventListener('submit', function (e) {
     const fileInput = document.getElementById('file');
     const files = fileInput.files;
 
+    // Validate required fields
+    if (!email || !subject || !name || !message) {
+        alert('Please fill in all required fields: Email, Subject, Name, and Message.');
+        return;
+    }
+
     // Create FormData object
     const formData = new FormData();
     formData.append('email', email);
@@ -42,21 +48,25 @@ document.getElementById('emailForm').addEventListener('submit', function (e) {
         method: 'POST',
         body: formData,
     })
-    .then(response => {
-        console.log('Response Status:', response.status);
-        if (!response.ok) {
-            return response.json().then(data => {
-                throw new Error(data.error || 'Failed to send email');
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response Data:', data);
-        alert(data.message || 'Email sent successfully!');
-    })
-    .catch(error => {
-        console.error('Error sending email:', error);
-        alert('Error sending email: ' + error.message);
-    });
-})    
+        .then(response => {
+            console.log('Response Status:', response.status);
+
+            // Check if response is successful
+            if (!response.ok) {
+                return response.json().then(data => {
+                    console.error('Backend Error Response:', data);
+                    throw new Error(data.error || 'Failed to send email');
+                });
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response Data:', data);
+            alert(data.message || 'Email sent successfully!');
+        })
+        .catch(error => {
+            console.error('Error sending email:', error);
+            alert('Error sending email: ' + error.message);
+        });
+});
