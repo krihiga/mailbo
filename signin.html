@@ -1,91 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>MailBO</title>
-    <link rel="stylesheet" href="style.css">
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-
-
-<script src="script.js"></script>
+  <title>MailBO</title>
+  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="signin-body">
-	
-    <section class="signin-section" id="signin-section">
-        <div class="signin-container">
-            <h2>Sign In</h2>
-					<!-- Mobile Number Sign-In -->
-                    <div id="maildiv" class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
-                        <form class="signin-form" id="signin" method="post">
-                          <input type="text" class="username" id="username" name="username" placeholder="UserName" required>
-                            <input type="email" class="email" id="email" name="email" placeholder="xyz@gmail.com" required>
-                            <input type="password" class="password" id="password" name="password" placeholder="Enter your Password" required>
-                            <button type="submit" class="signin-btn">Create New User</button>
-                            <a href="login.html"> <button type="button" class="signin-btn">Sign In</button></a>
-                        </form>
-                </div>
-        </div>
-    </section>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-      
-        const firebaseConfig = {
-          apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
-          authDomain: "mailbo-73ddc.firebaseapp.com",
-          projectId: "mailbo-73ddc",
-          storageBucket: "mailbo-73ddc.firebasestorage.app",
-          messagingSenderId: "246151382296",
-          appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
-        };
-      
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-      
-        // Form elements
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const usernameInput = document.getElementById('username');
-        const signinForm = document.getElementById('signin');
-      
-        const registerUser = async (event) => {
-          event.preventDefault();
-      
-          const email = emailInput.value.trim();
-          const password = passwordInput.value.trim();
-          const username = usernameInput.value.trim();
-      
-          if (email && password && username) {
-            try {
-              // Create user with email and password
-              const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-              const user = userCredential.user;
-      
-              console.log('User created:', user);
-      
-              // Save user data to Firebase Realtime Database
-              await set(ref(db, `users/${user.uid}`), {
-                username: username,
-                email: email,
-                createdAt: new Date().toISOString()
-              });
-      
-              alert('User successfully created and saved to the database!');
-              window.location.href = 'login.html';
-      
-            } catch (error) {
-              console.error('Error:', error);
-              alert(`Error: ${error.message}`);
-            }
-          } else {
-            alert('Please fill in all fields.');
-          }
-        };
-      
-        signinForm.addEventListener('submit', registerUser);
-      </script>
+  <section class="signin-section" id="signin-section">
+    <div class="signin-container">
+      <h2>Sign In</h2>
+      <!-- Sign-In Form -->
+      <div id="maildiv" class="wrap-input100 validate-input" data-validate="Valid email is: a@b.c">
+        <form class="signin-form" id="signin" method="post">
+          <input type="text" class="username" id="username" name="username" placeholder="UserName" required>
+          <input type="email" class="email" id="email" name="email" placeholder="xyz@gmail.com" required>
+          <input type="password" class="password" id="password" name="password" placeholder="Enter your Password" required>
+          <button type="submit" class="signin-btn">Create New User</button>
+          <a href="login.html"><button type="button" class="signin-btn">Sign In</button></a>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script type="module">
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
+      authDomain: "mailbo-73ddc.firebaseapp.com",
+      projectId: "mailbo-73ddc",
+      storageBucket: "mailbo-73ddc.firebasestorage.app",
+      messagingSenderId: "246151382296",
+      appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // Form elements
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const usernameInput = document.getElementById('username');
+    const signinForm = document.getElementById('signin');
+
+    // Register user function
+    const registerUser = async (event) => {
+      event.preventDefault();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+      const username = usernameInput.value.trim();
+
+      if (email && password && username) {
+        try {
+          // Create user with email and password
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          console.log('User created:', user);
+
+          // Save user data to Realtime Database
+          await set(ref(db, 'users/' + user.uid), {
+            username: username,
+            email: email,
+            createdAt: new Date().toISOString()
+          })
+          .then(() => {
+        // Alert and redirect after successful database save
+        console.log("Data saved to the database successfully.");
+        alert('User successfully created and saved to the database!');
+        window.location.href = 'login.html'; // Redirect to login page
+      })
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error: ' + error.message);
+        }
+      } else {
+        alert('Please fill in all fields.');
+      }
+    };
+
+    // Attach the event listener
+    signinForm.addEventListener('submit', registerUser);
+  </script>
 </body>
 </html>
