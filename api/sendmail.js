@@ -37,7 +37,7 @@ module.exports = (req, res) => {
             }
 
             const mailOptions = {
-                from: `"${name}" <${email}>`,
+                from: email,
                 to: process.env.GMAIL_USER, // Recipient's email address
                 subject: subject,
                 text: `
@@ -51,22 +51,23 @@ module.exports = (req, res) => {
             };
 
             // Add files to the attachments array
-            if (req.files && req.files.length > 0) {
+            if (req.files) {
                 req.files.forEach(file => {
                     mailOptions.attachments.push({
                         filename: file.originalname,
                         content: file.buffer,
+                        encoding: 'base64',
                     });
                 });
             }
 
             try {
                 const info = await transporter.sendMail(mailOptions);
-                console.log('Email sent:', info.response);
-                res.status(200).json({ success: true, message: 'Email sent successfully!' });
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({ message: 'Email sent successfully!' });
             } catch (error) {
                 console.error('Error sending email:', error);
-                res.status(500).json({ success: false, error: error.message || 'Error sending email' });
+                res.status(500).json({ error: 'Error sending email' });
             }
         });
     } else {
