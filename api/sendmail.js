@@ -1,61 +1,68 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('emailForm');
+const nodemailer = require('nodemailer');
+const multer = require('multer');
 
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            form.addEventListener('submit', async e => {
-                e.preventDefault();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).array('attachments');
 
-                const email = user.email;
-                const subject = document.getElementById('subject').value.trim();
-                const name = document.getElementById('name').value.trim();
-                const phone = document.getElementById('phone').value.trim();
-                const businessName = document.getElementById('businessName').value.trim();
-                const style = document.getElementById('style').value.trim();
-                const colors = document.getElementById('colors').value.trim();
-                const message = document.getElementById('message').value.trim();
-                const fileInput = document.getElementById('file');
-                const files = fileInput.files;
-
-                if (!subject || !name || !message) {
-                    alert('Please fill in all required fields.');
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('email', email);
-                formData.append('subject', subject);
-                formData.append('name', name);
-                formData.append('phone', phone);
-                formData.append('businessName', businessName);
-                formData.append('style', style);
-                formData.append('colors', colors);
-                formData.append('message', message);
-
-                for (let i = 0; i < files.length; i++) {
-                    formData.append('attachments', files[i]);
-                }
-
-                try {
-                    const response = await fetch('https://mailbo.vercel.app/api/sendMail', {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        alert(data.message || 'Email sent successfully!');
-                    } else {
-                        alert('Error sending email: ' + (data.error || 'Unknown error'));
-                    }
-                } catch (error) {
-                    console.error('Error sending email:', error);
-                    alert('Error sending email: ' + error.message);
-                }
-            });
-        } else {
-            alert('Please log in to send an email.');
-        }
-    });
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.GMAIL_USER,  // Make sure this is set up correctly in Firebase config
+        pass: process.env.GMAIL_PASS,  // Make sure this is set up correctly in Firebase config
+    },
 });
+
+module.exports = (req, res) => {
+    if (req.method === 'POST') {
+        upload(req, res, async (err) => {
+            if (err) {
+                console.error('Error uploading file:', err);
+                return res.status(400).json({ error: 'Error uploading file' });
+            }
+
+            const { email, subject, name, phone, businessName, style, colors, message } = req.body;
+
+            if (!email || !subject || !name || !message) {
+                return res.status(400).json({ error: 'Missing required fields' });
+            }
+
+            const mailOptions = {
+                from: email,
+                to: process.env.GMAIL_USER,
+                subject: subject,
+                text: `
+                    Name: ${name}
+                    Email: ${email}
+                    Phone: ${phone || 'N/A'}
+                    Business Name: ${businessName || 'N/A'}
+                    Preferred Style: ${style || 'N/A'}
+                    Preferred Colors: ${colors || 'N/A'}
+                    Message: ${message}`,
+                attachments: [],
+            };
+
+            if (req.files) {
+                req.files.forEach(file => {
+                    mailOptions.attachments.push({
+                        filename: file.originalname,
+                        content: file.buffer,
+                        encoding: 'base64',
+                    });
+                });
+            }
+
+            try {
+                const info = await transporter.sendMail(mailOptions);
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({ message: 'Email sent successfully!' });
+            } catch (error) {
+                console.error('Error sending email:', error);
+                res.status(500).json({ error: 'Error sending email: ' + error.message });
+            }
+        });
+    } else {
+        res.status(405).json({ error: 'Method Not Allowed' });
+    }
+};
