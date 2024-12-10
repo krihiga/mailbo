@@ -6,11 +6,11 @@ const express = require('express');
 
 admin.initializeApp();
 
-// Set up Multer for file uploads
+// Multer configuration for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Express app for handling routes
+// Express app setup
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -19,18 +19,15 @@ app.use(express.urlencoded({ extended: true }));
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
-    secure: false,
+    secure: false, // Use TLS
     auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASS,
+        user: process.env.GMAIL_USER, // Sender's email
+        pass: process.env.GMAIL_PASS, // App password
     },
 });
 
-exports.sendMail = functions.https.onRequest((req, res) => {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-     upload.array('attachments'), async (req, res) => {
+// Route to handle sending email
+app.post('https://mailbo.vercel.app/api/sendMail', upload.array('attachments'), async (req, res) => {
     try {
         const { email, subject, name, phone, businessName, style, colors, message } = req.body;
 
@@ -39,10 +36,10 @@ exports.sendMail = functions.https.onRequest((req, res) => {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Construct the email
+        // Email options
         const mailOptions = {
             from: email,
-            to: process.env.GMAIL_USER,
+            to: process.env.GMAIL_USER, // Admin's email
             subject: subject,
             text: `
                 Name: ${name}
@@ -59,16 +56,15 @@ exports.sendMail = functions.https.onRequest((req, res) => {
             })),
         };
 
-        // Send the email
+        // Send email
         const info = await transporter.sendMail(mailOptions);
         console.log('Email sent:', info.response);
         res.status(200).json({ message: 'Email sent successfully!' });
     } catch (error) {
         console.error('Error sending email:', error);
-        res.status(500).json({ error: 'Error sending email' });
+        res.status(500).json({ error: 'Failed to send email' });
     }
-}
 });
 
-// Export the Cloud Function
+// Export Firebase Cloud Function
 exports.sendMail = functions.https.onRequest(app);
