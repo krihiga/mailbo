@@ -1,12 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('emailForm');
+document.getElementById('emailForm').addEventListener('submit', function(e) {
+    e.preventDefault();
 
-    onAuthStateChanged(auth, user => {
-        if (user) {
-            form.addEventListener('submit', async e => {
-                e.preventDefault();
-
-                const email = document.getElementById('email').value.trim();;
+                const email = document.getElementById('email').value;
                 const subject = document.getElementById('subject').value.trim();
                 const name = document.getElementById('name').value.trim();
                 const phone = document.getElementById('phone').value.trim();
@@ -36,26 +31,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     formData.append('attachments', files[i]);
                 }
 
-                try {
-                    const response = await fetch('https://mailbo.vercel.app/api/sendMail', {
-                        method: 'POST',  // Make sure to use POST
-                        body: formData,  // Send form data
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        alert(data.message || 'Email sent successfully!');
-                    } else {
-                        alert('Error sending email: ' + (data.error || 'Unknown error'));
-                    }
-                } catch (error) {
-                    console.error('Error sending email:', error);
-                    alert('Error sending email: ' + error.message);
-                }
-            });
-        } else {
-            alert('Please log in to send an email.');
+                // Send the form data to your backend
+    fetch('https://mailbo.vercel.app/api/sendMail', { // Replace with your deployed Vercel URL
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to send email');
         }
+        return response.json();
+    })
+    .then(data => {
+        alert(data.message || 'Email sent successfully!');
+    })
+    .catch(error => {
+        console.error('Error sending email:', error);
+        alert('Error sending email: ' + error.message);
     });
-});
+})    
