@@ -1,13 +1,6 @@
 {
   "functions": [
     {
-      "users": {
-    "WgsyA2QyVLfap3AYOdVDSbR2rAb2": {
-      "createdAt": "2024-12-09T09:21:31.155Z",
-      "email": "rithikrishk@gmail.com",
-      "username": "rithi"
-    }
-  },
       "source": "functions",
       "codebase": "default",
       "ignore": [
