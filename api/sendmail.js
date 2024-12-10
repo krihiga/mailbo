@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-        user: process.env.GMAIL_USER,  // Make sure this is set up correctly in Firebase config
-        pass: process.env.GMAIL_PASS,  // Make sure this is set up correctly in Firebase config
+        user: process.env.GMAIL_USER,  
+        pass: process.env.GMAIL_PASS,  
     },
 });
 
@@ -29,8 +29,9 @@ module.exports = (req, res) => {
             }
 
             const mailOptions = {
-                from: email,
-                to: process.env.GMAIL_USER,
+                from: process.env.GMAIL_USER, // Must match the authenticated email
+                replyTo: email,              // Use the Firebase user's email for reply-to
+                to: process.env.GMAIL_USER,  // Recipient's email address (your GMAIL_USER)
                 subject: subject,
                 text: `
                     Name: ${name}
