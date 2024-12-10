@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
             form.addEventListener('submit', async e => {
                 e.preventDefault();
 
-                // Logged-in user's email
                 const email = user.email;
                 const subject = document.getElementById('subject').value.trim();
                 const name = document.getElementById('name').value.trim();
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Prepare form data
                 const formData = new FormData();
                 formData.append('email', email);
                 formData.append('subject', subject);
@@ -38,19 +36,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     formData.append('attachments', files[i]);
                 }
 
-                // Send data to backend
-                fetch('https://mailbo.vercel.app/api/sendMail', {
-                    method: 'POST',
-                    body: formData,
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        alert(data.message || 'Email sent successfully!');
-                    })
-                    .catch(error => {
-                        console.error('Error sending email:', error);
-                        alert('Error sending email: ' + error.message);
+                try {
+                    const response = await fetch('https://mailbo.vercel.app/api/sendMail', {
+                        method: 'POST',  // Make sure to use POST
+                        body: formData,  // Send form data
                     });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert(data.message || 'Email sent successfully!');
+                    } else {
+                        alert('Error sending email: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error sending email:', error);
+                    alert('Error sending email: ' + error.message);
+                }
             });
         } else {
             alert('Please log in to send an email.');
