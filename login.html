@@ -1,72 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>MailBO</title>
-    <link rel="stylesheet" href="style.css">
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
-
-
-<script src="script.js"></script>
+  <title>MailBO</title>
+  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body class="signin-body">
 
-    <section class="signin-section" id="signin-section">
-        <div class="signin-container">
-            <h2>LogIn</h2>
-					<!-- Mobile Number Sign-In -->
-                    <div id="maildiv" class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
-                        <form class="signin-form" id="signin" method="post">
-                            <input type="email" class="email" id="email" name="mobile" placeholder="xyz@gmail.com" required>
-                            <input type="password" class="password" id="password" name="mobile" placeholder="Enter your Password" required>
-                            <button type="submit" class="signin-btn">Log In</button>
-                            <a href="signin.html"> <button type="button" class="signin-btn">Sign In</button></a>
-                        </form>
-                </div>
-        </div>
-    </section>
-    <script type="module">
-        // Import the functions you need from the SDKs
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  <section class="signin-section" id="signin-section">
+    <div class="signin-container">
+      <h2>LogIn</h2>
+      <!-- Mobile Number Sign-In -->
+      <div id="maildiv" class="wrap-input100 validate-input">
+        <form class="signin-form" id="signin" method="post">
+          <input type="email" id="email" name="email" placeholder="xyz@gmail.com" required>
+          <input type="password" id="password" name="password" placeholder="Enter your Password" required>
+          <button type="submit" class="signin-btn">Log In</button>
+        </form>
+        <a href="signin.html" class="signin-link">Sign Up</a>
+      </div>
+    </div>
+  </section>
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
-  authDomain: "mailbo-73ddc.firebaseapp.com",
-  databaseURL: "https://mailbo-73ddc-default-rtdb.firebaseio.com",
-  projectId: "mailbo-73ddc",
-  storageBucket: "mailbo-73ddc.firebasestorage.app",
-  messagingSenderId: "246151382296",
-  appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
-};
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
- // Initialize Firebase
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
+      authDomain: "mailbo-73ddc.firebaseapp.com",
+      databaseURL: "https://mailbo-73ddc-default-rtdb.firebaseio.com",
+      projectId: "mailbo-73ddc",
+      storageBucket: "mailbo-73ddc.appspot.com",
+      messagingSenderId: "246151382296",
+      appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
 
-        // Get form elements
-        let Email = document.getElementById('email');
-        let Password = document.getElementById('password');
-        let signinForm = document.getElementById('signin');
+    // Ensure DOM is loaded before accessing elements
+    document.addEventListener("DOMContentLoaded", () => {
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const signinForm = document.getElementById('signin');
 
-        let SigninUser = async (evt) => {
-    evt.preventDefault();
+      // Sign-in user function
+      const SigninUser = async (evt) => {
+        evt.preventDefault();
 
-    const email = Email.value.trim();
-    const password = Password.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
 
-    
-
-    if (email && password) {
-        try {
+        if (email && password) {
+          try {
             // Firebase Authentication
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+
             console.log("User signed in:", user);
 
             // Fetch User Data from Database
@@ -74,28 +71,30 @@ const firebaseConfig = {
             const snapshot = await get(child(dbRef, `users/${user.uid}`));
 
             if (snapshot.exists()) {
-                const userData = snapshot.val();
-                const username = userData.username;
+              const userData = snapshot.val();
+              const username = userData.username;
 
-                // Save data to sessionStorage
-                sessionStorage.setItem("username", username);
-                sessionStorage.setItem("user-creds", JSON.stringify(user));
+              // Save data to sessionStorage
+              sessionStorage.setItem("username", username);
+              sessionStorage.setItem("user-creds", JSON.stringify(user));
 
-                console.log("Redirecting to home.html...");
-                window.location.href = "home.html"; // Redirect to home page
+              console.log("Redirecting to home.html...");
+              window.location.href = "home.html"; // Redirect to home page
             } else {
-                alert("User data not found in the database.");
-                console.error("No user data found for:", user.uid);
+              alert("User data not found in the database.");
+              console.error("No user data found for:", user.uid);
             }
-        } catch (error) {
+          } catch (error) {
             console.error("Error during sign-in:", error);
             alert("Error: " + error.message);
+          }
+        } else {
+          alert("Please fill in both fields.");
         }
-    } else {
-        alert("Please fill in both fields.");
-    }
-};
-        signinForm.addEventListener('submit', SigninUser);
-    </script>
+      };
+
+      signinForm.addEventListener('submit', SigninUser);
+    });
+  </script>
 </body>
 </html>
