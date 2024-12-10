@@ -5,8 +5,6 @@
   <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js"></script>
-
 </head>
 <body class="signin-body">
   <section class="signin-section" id="signin-section">
@@ -19,8 +17,8 @@
           <input type="email" class="email" id="email" name="email" placeholder="xyz@gmail.com" required>
           <input type="password" class="password" id="password" name="password" placeholder="Enter your Password" required>
           <button type="submit" class="signin-btn">Create New User</button>
-          <a href="login.html"><button type="button" class="signin-btn">Sign In</button></a>
         </form>
+        <a href="login.html" class="signin-link">Sign In</a>
       </div>
     </div>
   </section>
@@ -33,19 +31,19 @@
 
     // Firebase configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
-  authDomain: "mailbo-73ddc.firebaseapp.com",
-  databaseURL: "https://mailbo-73ddc-default-rtdb.firebaseio.com",
-  projectId: "mailbo-73ddc",
-  storageBucket: "mailbo-73ddc.firebasestorage.app",
-  messagingSenderId: "246151382296",
-  appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
+      apiKey: "AIzaSyCQt8bwiXPsf-QWGnBIHnE1fUbN_zMGf6k",
+      authDomain: "mailbo-73ddc.firebaseapp.com",
+      databaseURL: "https://mailbo-73ddc-default-rtdb.firebaseio.com",
+      projectId: "mailbo-73ddc",
+      storageBucket: "mailbo-73ddc.appspot.com",
+      messagingSenderId: "246151382296",
+      appId: "1:246151382296:web:01de0a9c986e5a21c28a6d"
     };
 
     // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
-    const app = firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
 
     // Form elements
     const emailInput = document.getElementById('email');
@@ -74,13 +72,10 @@
             username: username,
             email: email,
             createdAt: new Date().toISOString()
-          })
-          .then(() => {
-        // Alert and redirect after successful database save
-        console.log("Data saved to the database successfully.");
-        alert('User successfully created and saved to the database!');
-        window.location.href = 'login.html'; // Redirect to login page
-      })
+          });
+
+          alert('User successfully created and saved to the database!');
+          window.location.href = 'login.html'; // Redirect to login page
         } catch (error) {
           console.error('Error:', error);
           alert('Error: ' + error.message);
