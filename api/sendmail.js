@@ -1,83 +1,61 @@
-const nodemailer = require('nodemailer');
-const functions = require("firebase-functions");
-const multer = require('multer');
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('emailForm');
 
-// Set up storage for multer (in-memory storage for file upload)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).array('attachments');
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
 
-// Create a transporter using Gmail's SMTP server
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',  // Gmail's SMTP server
-    port: 587,               // TLS port
-    secure: false,           // Use TLS
-    auth: {
-        user: functions.users().gmail.user,  // Sender's email address from Firebase config
-        pass: functions.users().gmail.pass,  // Sender's email app password from Firebase config
-    },
-});
+                const email = user.email;
+                const subject = document.getElementById('subject').value.trim();
+                const name = document.getElementById('name').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const businessName = document.getElementById('businessName').value.trim();
+                const style = document.getElementById('style').value.trim();
+                const colors = document.getElementById('colors').value.trim();
+                const message = document.getElementById('message').value.trim();
+                const fileInput = document.getElementById('file');
+                const files = fileInput.files;
 
-// API route for sending the email
-module.exports = (req, res) => {
-    if (req.method === 'POST') {
+                if (!subject || !name || !message) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
 
-        // Parse the incoming form data with file attachments
-        upload(req, res, async (err) => {
-            if (err) {
-                console.error('Error uploading file:', err);
-                return res.status(400).json({ error: 'Error uploading file' });
-            }
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('subject', subject);
+                formData.append('name', name);
+                formData.append('phone', phone);
+                formData.append('businessName', businessName);
+                formData.append('style', style);
+                formData.append('colors', colors);
+                formData.append('message', message);
 
-            // Log the incoming form data to check
-            console.log('Form Data:', req.body);
-            console.log('Files:', req.files);
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('attachments', files[i]);
+                }
 
-            const { email, subject, name, phone, businessName, style, colors, message } = req.body;
-
-            // Validate required fields
-            if (!email || !subject || !name || !message) {
-                return res.status(400).json({ error: 'Missing required fields' });
-            }
-
-            // Create email options
-            const mailOptions = {
-                from: email,  // Sender's email address from Firebase config
-                to: process.env.GMAIL_USER,           // Recipient's email address (configured in environment)
-                subject: subject,
-                text: `
-                    Name: ${name}
-                    Email: ${email}
-                    Phone: ${phone || 'N/A'}
-                    Business Name: ${businessName || 'N/A'}
-                    Preferred Style: ${style || 'N/A'}
-                    Preferred Colors: ${colors || 'N/A'}
-                    Message: ${message}`,
-                attachments: [], // Initialize attachments array
-            };
-
-            // Add files to the attachments array if any
-            if (req.files) {
-                req.files.forEach(file => {
-                    mailOptions.attachments.push({
-                        filename: file.originalname,
-                        content: file.buffer,
-                        encoding: 'base64',
+                try {
+                    const response = await fetch('https://mailbo.vercel.app/api/sendMail', {
+                        method: 'POST',
+                        body: formData,
                     });
-                });
-            }
 
-            // Send the email using Nodemailer
-            try {
-                const info = await transporter.sendMail(mailOptions);
-                console.log('Email sent: ' + info.response);
-                res.status(200).json({ message: 'Email sent successfully!' });
-            } catch (error) {
-                console.error('Error sending email:', error);
-                res.status(500).json({ error: 'Error sending email' });
-            }
-        });
-    } else {
-        // Handle unsupported HTTP methods
-        res.status(405).json({ error: 'Method Not Allowed' });
-    }
-};
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert(data.message || 'Email sent successfully!');
+                    } else {
+                        alert('Error sending email: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error sending email:', error);
+                    alert('Error sending email: ' + error.message);
+                }
+            });
+        } else {
+            alert('Please log in to send an email.');
+        }
+    });
+});
