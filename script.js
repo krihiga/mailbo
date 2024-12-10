@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
             form.addEventListener('submit', async e => {
                 e.preventDefault();
 
-                const email = user.email;
+                const email = document.getElementById('email').value.trim();;
                 const subject = document.getElementById('subject').value.trim();
                 const name = document.getElementById('name').value.trim();
                 const phone = document.getElementById('phone').value.trim();
